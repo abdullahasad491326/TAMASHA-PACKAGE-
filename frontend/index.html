@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Jazz OTP Automation</title>
+</head>
+<body>
+<h1>Jazz OTP Automation (Educational)</h1>
+
+<div>
+<h2>Step 1: Send OTP</h2>
+<label for="phoneNumber">Enter Jazz number (92XXXXXXXXXX): </label>
+<input type="text" id="phoneNumber" placeholder="92XXXXXXXXXX" />
+<button onclick="sendOtp()">Send OTP</button>
+<pre id="sendResponse"></pre>
+</div>
+
+<div>
+<h2>Step 2: Verify OTP</h2>
+<label for="otp">Enter OTP received on number: </label>
+<input type="text" id="otp" />
+<button onclick="verifyOtp()">Verify OTP</button>
+<pre id="verifyResponse"></pre>
+</div>
+
+<div>
+<h2>Step 3: Subscribe Package</h2>
+<button onclick="subscribePackage()">Subscribe to Tamasha 25GB</button>
+<pre id="subscribeResponse"></pre>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
