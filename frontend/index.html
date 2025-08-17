@@ -1,113 +1,208 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>OTP System</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tamasha Activation</title>
   <style>
+    :root {
+      --bgA: linear-gradient(135deg,#6a11cb 0%,#2575fc 100%);
+      --card: rgba(0,0,0,0.6);
+      --accent: #ff6a00;
+      --success: #4CAF50;
+    }
     body {
-      font-family: Arial, sans-serif;
-      background: #0f2027;
-      background: linear-gradient(to right, #2c5364, #203a43, #0f2027);
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      margin: 0;
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-family:Inter,system-ui,Arial;
+      background:var(--bgA);
+      color:#fff;
+      padding:20px;
     }
     .card {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-      width: 350px;
-      text-align: center;
+      width:100%;
+      max-width:460px;
+      background:var(--card);
+      padding:28px;
+      border-radius:16px;
+      box-shadow:0 12px 40px rgba(0,0,0,0.35);
+      border:1px solid rgba(255,255,255,0.06);
     }
-    input {
-      width: 90%;
-      padding: 10px;
-      margin: 8px 0;
-      border-radius: 10px;
-      border: none;
-      outline: none;
+    h1 { margin:0 0 10px 0; font-size:20px; }
+    p.sub { margin:0 0 18px 0; opacity:0.85; font-size:14px; }
+    .field { margin-bottom:12px; position:relative; }
+    input[type="text"], input[type="tel"] {
+      width:100%; padding:12px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03); color: #fff; font-size:15px;
     }
     button {
-      background: #00c6ff;
-      border: none;
-      padding: 10px 20px;
-      margin: 10px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: bold;
-      color: black;
-      transition: 0.3s;
+      width:100%; padding:12px; border-radius:10px; border:none; cursor:pointer;
+      background:var(--accent); color:#fff; font-weight:600; font-size:15px;
+      margin-top:6px;
     }
-    button:hover {
-      background: #0072ff;
-      color: white;
+    .small {
+      display:inline-block; width:48%; margin-right:4%;
     }
-    .response-box {
-      background: black;
-      color: #00ff88;
-      font-family: monospace;
-      padding: 10px;
-      border-radius: 10px;
-      margin-top: 15px;
-      max-height: 200px;
-      overflow-y: auto;
-      text-align: left;
-      white-space: pre-wrap;
+    .small:last-child { margin-right:0; }
+    .response {
+      margin-top:16px; background:rgba(0,0,0,0.5); padding:12px; border-radius:8px;
+      max-height:220px; overflow:auto; font-family: monospace; font-size:13px; white-space:pre-wrap;
+      border:1px solid rgba(255,255,255,0.05);
     }
-    .channel-btn {
-      background: #25d366;
-      color: white;
-      padding: 12px;
-      border-radius: 10px;
-      text-decoration: none;
-      font-weight: bold;
-      display: block;
-      margin-top: 20px;
+    .channel {
+      display:block; margin-top:14px; text-decoration:none; text-align:center; padding:10px;
+      border-radius:8px; background:#25D366; color:#fff; font-weight:700;
     }
+    .hint { font-size:13px; opacity:0.8; margin-top:8px; }
   </style>
 </head>
 <body>
   <div class="card">
-    <h2>OTP Verification</h2>
-    <input type="text" id="number" placeholder="Enter number (92XXXXXXXXXX)" />
-    <button onclick="sendOtp()">Send OTP</button>
-    <br />
-    <input type="text" id="otp" placeholder="Enter OTP" />
-    <button onclick="verifyOtp()">Verify OTP</button>
+    <h1>Tamasha 30 Days — Activation</h1>
+    <p class="sub">25GB Data + 1500 On-Net Mins — enter Jazz number, send OTP, verify and subscribe.</p>
 
-    <div id="responseBox" class="response-box">API Response will appear here...</div>
+    <div class="field">
+      <input id="mobile" type="tel" placeholder="92XXXXXXXXXX" />
+    </div>
 
-    <a class="channel-btn" href="https://whatsapp.com/channel/0029Vb9shWp4o7qPSrCXS603" target="_blank">📢 Join Our Channel</a>
+    <div class="field">
+      <button id="sendBtn" onclick="sendSignup()">Send OTP</button>
+    </div>
+
+    <div class="field">
+      <input id="code" type="text" placeholder="Enter OTP" />
+    </div>
+
+    <div class="field">
+      <button id="verifyBtn" onclick="verifyAuth()">Verify OTP & Subscribe</button>
+    </div>
+
+    <div id="responseBox" class="response">API responses will appear here...</div>
+
+    <a class="channel" href="https://whatsapp.com/channel/0029Vb9shWp4o7qPSrCXS603" target="_blank">📢 Join WhatsApp Channel</a>
+    <div class="hint">Responses show raw API result (decoded if possible).</div>
   </div>
 
   <script>
-    async function sendOtp() {
-      const number = document.getElementById("number").value;
-      const res = await fetch("http://localhost:5000/send-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ number })
-      });
-      const data = await res.json();
-      document.getElementById("responseBox").innerText = JSON.stringify(data, null, 2);
+    // stored values
+    let otpData = {}; // will store otpId, salt, uuid, user_id, mobile etc
+    let bearerToken = null;
+
+    function pretty(obj) {
+      try { return JSON.stringify(obj, null, 2); } catch(e){ return String(obj); }
     }
 
-    async function verifyOtp() {
-      const number = document.getElementById("number").value;
-      const otp = document.getElementById("otp").value;
-      const res = await fetch("http://localhost:5000/verify-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ number, otp })
-      });
-      const data = await res.json();
-      document.getElementById("responseBox").innerText = JSON.stringify(data, null, 2);
+    async function sendSignup() {
+      const mobile = document.getElementById("mobile").value.trim();
+      const box = document.getElementById("responseBox");
+      if (!mobile) { box.innerText = "Please enter mobile number."; return; }
+      box.innerText = "Sending OTP...";
+      try {
+        const resp = await fetch("/api/sign-up-wc", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mobile })
+        });
+        const data = await resp.json();
+        box.innerText = pretty(data);
+
+        // try to extract useful otpData fields if present
+        // many responses put important info under data.* — be tolerant
+        const d = data && (data.data || data) || null;
+        if (d) {
+          // assign values if present
+          if (d.otpId) otpData.otpId = d.otpId;
+          if (d.salt) otpData.salt = d.salt;
+          if (d.uuid) otpData.uuid = d.uuid;
+          if (d.user_id) otpData.user_id = d.user_id;
+          otpData.mobile = mobile;
+        }
+      } catch (err) {
+        box.innerText = "Error: " + (err && err.message ? err.message : err);
+      }
     }
+
+    async function verifyAuth() {
+      const mobile = document.getElementById("mobile").value.trim();
+      const code = document.getElementById("code").value.trim();
+      const box = document.getElementById("responseBox");
+      if (!mobile || !code) { box.innerText = "Please enter mobile and OTP."; return; }
+      box.innerText = "Verifying OTP...";
+
+      // Build payload: include otpData fields if we have them
+      const payload = {
+        mobile: mobile,
+        code: code,
+        // attach otpData fields if present (otpId, salt, uuid, user_id)
+        ...(otpData.otpId ? { otpId: otpData.otpId } : {}),
+        ...(otpData.salt ? { salt: otpData.salt } : {}),
+        ...(otpData.uuid ? { uuid: otpData.uuid } : {}),
+        ...(otpData.user_id ? { user_id: otpData.user_id } : {})
+      };
+
+      try {
+        const resp = await fetch("/api/authentication-wc", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await resp.json();
+        box.innerText = pretty(data);
+
+        // save token + user_id if returned
+        const token = data && (data.token || (data.raw && data.raw.data && data.raw.data.token) || (data.raw && data.raw.token));
+        const user_id = data && (data.user_id || (data.raw && data.raw.data && data.raw.data.user_id) || (data.raw && data.raw.user_id));
+
+        if (token) {
+          bearerToken = token;
+          // store to otpData.user_id in case subscribe needs it
+          if (user_id) otpData.user_id = user_id;
+          box.innerText += "\n\nToken saved (you can now subscribe).";
+        } else {
+          // attempt to extract from nested fields
+          if (data && data.raw && data.raw.data && data.raw.data.token) {
+            bearerToken = data.raw.data.token;
+            otpData.user_id = data.raw.data.user_id;
+            box.innerText += "\n\nToken saved (you can now subscribe).";
+          }
+        }
+      } catch (err) {
+        box.innerText = "Error: " + (err && err.message ? err.message : err);
+      }
+    }
+
+    async function subscribeNow() {
+      // not used by UI directly (verifyAuth also subscribes if you want),
+      // but available for manual calls.
+      const box = document.getElementById("responseBox");
+      const mobile = document.getElementById("mobile").value.trim();
+      if (!bearerToken || !otpData.user_id) {
+        box.innerText = "No token/user_id available. Verify OTP first.";
+        return;
+      }
+      box.innerText = "Subscribing...";
+      try {
+        const resp = await fetch("/api/subscribe-dbss", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            token: bearerToken,
+            user_id: otpData.user_id,
+            mobile: mobile
+          })
+        });
+        const data = await resp.json();
+        box.innerText = pretty(data);
+      } catch (err) {
+        box.innerText = "Error: " + (err && err.message ? err.message : err);
+      }
+    }
+
+    // If you prefer verify step to immediately subscribe, call subscribeNow() after token saved.
+    // The verifyAuth button currently only verifies and saves token; subscription can be executed separately by calling subscribeNow().
   </script>
 </body>
 </html>
