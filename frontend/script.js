@@ -1,9 +1,12 @@
-let otpData = {}; // Store OTP info
+let otpData = {}; 
 let bearerToken = ""; 
 
 const sendResponsePre = document.getElementById('sendResponse');
 const verifyResponsePre = document.getElementById('verifyResponse');
 const subscribeResponsePre = document.getElementById('subscribeResponse');
+
+// API base URL = same domain (since frontend is served by backend now)
+const API_BASE = "";
 
 async function sendOtp() {
   const number = document.getElementById('phoneNumber').value.trim();
@@ -13,7 +16,7 @@ async function sendOtp() {
   }
   sendResponsePre.textContent = "Sending OTP...";
   try {
-    const response = await fetch('https://<YOUR_DEPLOYED_BACKEND_URL>/api/send-otp', {
+    const response = await fetch(`${API_BASE}/api/send-otp`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ mobile: number }),
@@ -21,7 +24,6 @@ async function sendOtp() {
     const data = await response.json();
     sendResponsePre.textContent = JSON.stringify(data, null, 2);
 
-    // Save OTP data for verification
     otpData = {
       otpId: data.otpId,
       salt: data.salt,
@@ -42,7 +44,7 @@ async function verifyOtp() {
   }
   verifyResponsePre.textContent = "Verifying OTP...";
   try {
-    const response = await fetch('https://<YOUR_DEPLOYED_BACKEND_URL>/api/verify-otp', {
+    const response = await fetch(`${API_BASE}/api/verify-otp`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ otpData, code }),
@@ -65,7 +67,7 @@ async function subscribePackage() {
   }
   subscribeResponsePre.textContent = "Subscribing...";
   try {
-    const response = await fetch('https://<YOUR_DEPLOYED_BACKEND_URL>/api/subscribe', {
+    const response = await fetch(`${API_BASE}/api/subscribe`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
