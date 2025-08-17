@@ -1,132 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>OTP Verification</title>
+  <meta charset="UTF-8" />
+  <title>OTP System</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #141e30, #243b55);
-      color: #fff;
-      text-align: center;
-      padding: 30px;
+      background: #0f2027;
+      background: linear-gradient(to right, #2c5364, #203a43, #0f2027);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
     }
-    h2 {
-      margin-bottom: 20px;
-      font-size: 26px;
-      color: #00e676;
-    }
-    .container {
-      max-width: 400px;
-      margin: auto;
+    .card {
       background: rgba(255, 255, 255, 0.1);
-      padding: 25px;
+      padding: 20px;
       border-radius: 15px;
-      box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      width: 350px;
+      text-align: center;
     }
     input {
-      width: 100%;
-      padding: 12px;
+      width: 90%;
+      padding: 10px;
       margin: 8px 0;
-      border-radius: 8px;
+      border-radius: 10px;
       border: none;
       outline: none;
-      font-size: 16px;
     }
     button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
+      background: #00c6ff;
       border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: bold;
+      padding: 10px 20px;
+      margin: 10px;
+      border-radius: 10px;
       cursor: pointer;
-      background: #00e676;
-      color: #000;
+      font-weight: bold;
+      color: black;
       transition: 0.3s;
     }
     button:hover {
-      background: #00c853;
+      background: #0072ff;
+      color: white;
     }
     .response-box {
-      margin-top: 20px;
-      padding: 15px;
-      background: rgba(0,0,0,0.6);
+      background: black;
+      color: #00ff88;
+      font-family: monospace;
+      padding: 10px;
       border-radius: 10px;
-      text-align: left;
+      margin-top: 15px;
       max-height: 200px;
       overflow-y: auto;
+      text-align: left;
       white-space: pre-wrap;
-      word-break: break-word;
-      border: 1px solid #00e676;
-      font-size: 14px;
     }
     .channel-btn {
-      margin-top: 20px;
-      display: block;
-      text-decoration: none;
-      padding: 12px;
-      border-radius: 8px;
-      background: #25D366;
+      background: #25d366;
       color: white;
+      padding: 12px;
+      border-radius: 10px;
+      text-decoration: none;
       font-weight: bold;
-      transition: 0.3s;
-    }
-    .channel-btn:hover {
-      background: #128C7E;
+      display: block;
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
-  <h2>OTP Verification System</h2>
-  <div class="container">
-    <input type="text" id="number" placeholder="Enter Jazz Number (92XXXXXXXXXX)" />
-    <button onclick="sendOTP()">Send OTP</button>
+  <div class="card">
+    <h2>OTP Verification</h2>
+    <input type="text" id="number" placeholder="Enter number (92XXXXXXXXXX)" />
+    <button onclick="sendOtp()">Send OTP</button>
+    <br />
     <input type="text" id="otp" placeholder="Enter OTP" />
-    <button onclick="verifyOTP()">Verify OTP</button>
-    
-    <div id="responseBox" class="response-box">Response will appear here...</div>
-    
-    <a href="https://whatsapp.com/channel/0029Vb9shWp4o7qPSrCXS603" target="_blank" class="channel-btn">
-      📢 Join Our WhatsApp Channel
-    </a>
+    <button onclick="verifyOtp()">Verify OTP</button>
+
+    <div id="responseBox" class="response-box">API Response will appear here...</div>
+
+    <a class="channel-btn" href="https://whatsapp.com/channel/0029Vb9shWp4o7qPSrCXS603" target="_blank">📢 Join Our Channel</a>
   </div>
 
   <script>
-    async function sendOTP() {
-      const number = document.getElementById('number').value;
-      const resBox = document.getElementById('responseBox');
-      resBox.innerHTML = "Sending OTP...";
-      try {
-        const response = await fetch("http://localhost:3000/send-otp", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ number })
-        });
-        const data = await response.text(); // keep raw response
-        resBox.innerText = data;
-      } catch (err) {
-        resBox.innerText = "Error: " + err;
-      }
+    async function sendOtp() {
+      const number = document.getElementById("number").value;
+      const res = await fetch("http://localhost:5000/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ number })
+      });
+      const data = await res.json();
+      document.getElementById("responseBox").innerText = JSON.stringify(data, null, 2);
     }
 
-    async function verifyOTP() {
-      const number = document.getElementById('number').value;
-      const otp = document.getElementById('otp').value;
-      const resBox = document.getElementById('responseBox');
-      resBox.innerHTML = "Verifying OTP...";
-      try {
-        const response = await fetch("http://localhost:3000/verify-otp", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ number, otp })
-        });
-        const data = await response.text(); // keep raw response
-        resBox.innerText = data;
-      } catch (err) {
-        resBox.innerText = "Error: " + err;
-      }
+    async function verifyOtp() {
+      const number = document.getElementById("number").value;
+      const otp = document.getElementById("otp").value;
+      const res = await fetch("http://localhost:5000/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ number, otp })
+      });
+      const data = await res.json();
+      document.getElementById("responseBox").innerText = JSON.stringify(data, null, 2);
     }
   </script>
 </body>
