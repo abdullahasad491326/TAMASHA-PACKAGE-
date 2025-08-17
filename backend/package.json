@@ -1,15 +1,14 @@
 {
-  "name": "otp-system",
+  "name": "tamasha-proxy",
   "version": "1.0.0",
-  "description": "OTP Sender and Verifier",
+  "description": "Proxy to JazzTV signup/auth/subscribe endpoints",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "axios": "^1.6.8",
     "body-parser": "^1.20.2",
-    "cors": "^2.8.5",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "node-fetch": "^2.6.7"
   }
 }
