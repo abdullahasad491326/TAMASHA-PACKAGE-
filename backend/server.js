@@ -1,6 +1,7 @@
 const express = require('express');
 const fetch = require('node-fetch');
 const bodyParser = require('body-parser');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -8,13 +9,15 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(bodyParser.json());
 
-// Enable CORS for all origins (adjust in production)
+// Enable CORS (you can restrict in production)
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*'); 
   res.header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
   next();
 });
+
+// ---------------- API ROUTES ----------------
 
 // Send OTP
 app.post('/api/send-otp', async (req, res) => {
@@ -98,6 +101,17 @@ app.post('/api/subscribe', async (req, res) => {
   }
 });
 
+// ---------------- FRONTEND ----------------
+
+// Serve static frontend files
+app.use(express.static(path.join(__dirname, '../frontend')));
+
+// Catch-all route → send index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/index.html'));
+});
+
+// ---------------- START SERVER ----------------
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
