@@ -6,22 +6,21 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
 app.use(bodyParser.json());
 
-// Enable CORS (you can restrict in production)
+// CORS
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*'); 
+  res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
   next();
 });
 
-// ---------------- API ROUTES ----------------
+// ---------------- API ----------------
 
 // Send OTP
 app.post('/api/send-otp', async (req, res) => {
-  const { mobile } = req.body;
+  const { phone } = req.body; // frontend sends "phone"
   try {
     const response = await fetch('https://jazztv.pk/alpha/api_gateway/index.php/v3/users-dbss/sign-up-wc', {
       method: 'POST',
@@ -33,7 +32,7 @@ app.post('/api/send-otp', async (req, res) => {
         device_id: "web",
         is_header_enrichment: "no",
         other_telco: "jazz",
-        mobile: mobile,
+        mobile: phone,
         phone_details: "web"
       }),
     });
@@ -44,74 +43,60 @@ app.post('/api/send-otp', async (req, res) => {
   }
 });
 
-// Verify OTP
-app.post('/api/verify-otp', async (req, res) => {
-  const { otpData, code } = req.body;
+// Verify OTP + Subscribe in one step
+app.post('/api/verify-and-subscribe', async (req, res) => {
+  const { phone, otp } = req.body;
   try {
-    const response = await fetch('https://jazztv.pk/alpha/api_gateway/index.php/v3/users-dbss/authentication-wc', {
+    // First verify OTP
+    const verifyResponse = await fetch('https://jazztv.pk/alpha/api_gateway/index.php/v3/users-dbss/authentication-wc', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json;charset=UTF-8' },
       body: JSON.stringify({
         type: "prepaid",
-        otpId: otpData.otpId,
-        phone_details: "web",
-        code: code,
+        mobile: phone,
+        code: otp,
         telco: "jazz",
         service_class: "16",
         other_telco: "jazz",
-        mobile: otpData.mobile,
-        user_id: otpData.user_id,
         device_id: "web",
         is_jazz_user: "yes",
-        opId: 0,
-        salt: otpData.salt,
-        uuid: otpData.uuid
+        phone_details: "web"
       }),
     });
-    const data = await response.json();
-    res.json(data);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to verify OTP', details: err.message });
-  }
-});
+    const verifyData = await verifyResponse.json();
 
-// Subscribe package
-app.post('/api/subscribe', async (req, res) => {
-  const { token, user_id, mobile } = req.body;
-  try {
-    const response = await fetch('https://jazztv.pk/alpha/api_gateway/index.php/v3/users-dbss/subscribe-dbss', {
+    if (!verifyResponse.ok || !verifyData.token) {
+      return res.status(400).json({ error: "OTP verification failed", details: verifyData });
+    }
+
+    // Then subscribe
+    const subscribeResponse = await fetch('https://jazztv.pk/alpha/api_gateway/index.php/v3/users-dbss/subscribe-dbss', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${verifyData.token}`,
         'Content-Type': 'application/json;charset=UTF-8'
       },
       body: JSON.stringify({
         type: "prepaid",
-        user_id: user_id,
-        mobile: mobile,
+        user_id: verifyData.user_id,
+        mobile: phone,
         package_id: 3,
-        user_agent: "Dummy_User_Agent",
+        user_agent: "Web_Client",
         dbss_sub_id: null
       }),
     });
-    const data = await response.json();
-    res.json(data);
+
+    const subData = await subscribeResponse.json();
+    res.json({ message: "Subscribed successfully", verifyData, subData });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to subscribe', details: err.message });
+    res.status(500).json({ error: 'Failed to verify and subscribe', details: err.message });
   }
 });
 
 // ---------------- FRONTEND ----------------
-
-// Serve static frontend files
 app.use(express.static(path.join(__dirname, '../frontend')));
-
-// Catch-all route → send index.html
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });
 
-// ---------------- START SERVER ----------------
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
