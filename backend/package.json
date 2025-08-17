@@ -1,7 +1,6 @@
 {
   "name": "jazz-otp-backend",
   "version": "1.0.0",
-  "description": "Backend for Jazz OTP Automation",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
