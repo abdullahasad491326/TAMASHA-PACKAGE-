@@ -3,10 +3,17 @@ const express = require('express');
 const fetch = require('node-fetch'); // npm install node-fetch@2
 const crypto = require('crypto');
 const { v4: uuidv4 } = require('uuid');
+const path = require('path');
 const app = express();
 
 app.use(express.json());
-app.use(express.static('../Frontend')); // Serve index.html
+
+// Serve frontend
+app.use(express.static(path.join(__dirname, '../Frontend')));
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../Frontend/index.html'));
+});
 
 // Helper: generate random hex salt
 function generateSalt() {
