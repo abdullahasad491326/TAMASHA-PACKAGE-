@@ -1,208 +1,191 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Tamasha Activation</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JazzTV OTP Signup</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bgA: linear-gradient(135deg,#6a11cb 0%,#2575fc 100%);
-      --card: rgba(0,0,0,0.6);
-      --accent: #ff6a00;
-      --success: #4CAF50;
+      --primary-color: #e50914; /* Netflix Red */
+      --secondary-color: #000;
+      --text-color: #333;
+      --light-gray: #f0f0f0;
+      --card-bg: #fff;
     }
+
     body {
-      margin:0;
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-family:Inter,system-ui,Arial;
-      background:var(--bgA);
-      color:#fff;
-      padding:20px;
+      font-family: 'Poppins', sans-serif;
+      background: var(--light-gray);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
     }
-    .card {
-      width:100%;
-      max-width:460px;
-      background:var(--card);
-      padding:28px;
-      border-radius:16px;
-      box-shadow:0 12px 40px rgba(0,0,0,0.35);
-      border:1px solid rgba(255,255,255,0.06);
+
+    .container {
+      background: var(--card-bg);
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 450px;
+      text-align: center;
+      border-top: 5px solid var(--primary-color);
+      box-sizing: border-box;
     }
-    h1 { margin:0 0 10px 0; font-size:20px; }
-    p.sub { margin:0 0 18px 0; opacity:0.85; font-size:14px; }
-    .field { margin-bottom:12px; position:relative; }
-    input[type="text"], input[type="tel"] {
-      width:100%; padding:12px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.03); color: #fff; font-size:15px;
+
+    h2 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-color);
+      margin-bottom: 10px;
     }
+
+    p {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 16px;
+    }
+
+    input {
+      width: 100%;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-size: 16px;
+      transition: border-color 0.3s ease;
+      box-sizing: border-box;
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 5px rgba(229, 9, 20, 0.2);
+    }
+
     button {
-      width:100%; padding:12px; border-radius:10px; border:none; cursor:pointer;
-      background:var(--accent); color:#fff; font-weight:600; font-size:15px;
-      margin-top:6px;
+      width: 100%;
+      padding: 15px;
+      margin-top: 20px;
+      background: var(--primary-color);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: 600;
+      transition: transform 0.2s ease, background-color 0.3s ease;
     }
-    .small {
-      display:inline-block; width:48%; margin-right:4%;
+
+    button:hover {
+      background: #cc0812;
+      transform: translateY(-2px);
     }
-    .small:last-child { margin-right:0; }
+
+    .channel-button {
+      background: #25D366; /* WhatsApp Green */
+      margin-top: 15px;
+    }
+
+    .channel-button:hover {
+      background: #128C7E;
+    }
+
     .response {
-      margin-top:16px; background:rgba(0,0,0,0.5); padding:12px; border-radius:8px;
-      max-height:220px; overflow:auto; font-family: monospace; font-size:13px; white-space:pre-wrap;
-      border:1px solid rgba(255,255,255,0.05);
+      margin-top: 25px;
+      padding: 15px;
+      border-radius: 8px;
+      background: #fdf3f3;
+      color: var(--primary-color);
+      word-break: break-word;
+      font-size: 14px;
+      font-weight: 600;
+      border: 1px solid var(--primary-color);
+      animation: fadeIn 0.5s ease-in-out;
     }
-    .channel {
-      display:block; margin-top:14px; text-decoration:none; text-align:center; padding:10px;
-      border-radius:8px; background:#25D366; color:#fff; font-weight:700;
+
+    #otpSection {
+      margin-top: 20px;
     }
-    .hint { font-size:13px; opacity:0.8; margin-top:8px; }
+
+    .hidden {
+      display: none;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Tamasha 30 Days — Activation</h1>
-    <p class="sub">25GB Data + 1500 On-Net Mins — enter Jazz number, send OTP, verify and subscribe.</p>
+  <div class="container">
+    <h2>Secure Signup</h2>
+    <p>Enter your Jazz number to get started with Free 25 GB Data for Tamasha App.</p>
 
-    <div class="field">
-      <input id="mobile" type="tel" placeholder="92XXXXXXXXXX" />
+    <input type="text" id="mobile" placeholder="ENTER (923XXXXXXXXX)">
+    <button onclick="sendOtp()">Send OTP</button>
+    
+    <div id="otpSection" class="hidden">
+      <input type="text" id="otp" placeholder="Enter OTP received">
+      <button onclick="verifyOtp()">Verify OTP</button>
     </div>
 
-    <div class="field">
-      <button id="sendBtn" onclick="sendSignup()">Send OTP</button>
-    </div>
+    <div class="response hidden" id="response"></div>
 
-    <div class="field">
-      <input id="code" type="text" placeholder="Enter OTP" />
-    </div>
-
-    <div class="field">
-      <button id="verifyBtn" onclick="verifyAuth()">Verify OTP & Subscribe</button>
-    </div>
-
-    <div id="responseBox" class="response">API responses will appear here...</div>
-
-    <a class="channel" href="https://whatsapp.com/channel/0029Vb9shWp4o7qPSrCXS603" target="_blank">📢 Join WhatsApp Channel</a>
-    <div class="hint">Responses show raw API result (decoded if possible).</div>
+    <a href="https://whatsapp.com/channel/0029Vb9shWp4o7qPSrCXS603" target="_blank">
+      <button class="channel-button">
+        Join Our WhatsApp Channel
+      </button>
+    </a>
   </div>
 
   <script>
-    // stored values
-    let otpData = {}; // will store otpId, salt, uuid, user_id, mobile etc
-    let bearerToken = null;
+    async function sendOtp() {
+      const mobile = document.getElementById('mobile').value;
+      const resDiv = document.getElementById('response');
+      resDiv.textContent = "Sending OTP...";
+      resDiv.classList.remove('hidden');
 
-    function pretty(obj) {
-      try { return JSON.stringify(obj, null, 2); } catch(e){ return String(obj); }
-    }
+      const response = await fetch('/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mobile })
+      });
 
-    async function sendSignup() {
-      const mobile = document.getElementById("mobile").value.trim();
-      const box = document.getElementById("responseBox");
-      if (!mobile) { box.innerText = "Please enter mobile number."; return; }
-      box.innerText = "Sending OTP...";
-      try {
-        const resp = await fetch("/api/sign-up-wc", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ mobile })
-        });
-        const data = await resp.json();
-        box.innerText = pretty(data);
-
-        // try to extract useful otpData fields if present
-        // many responses put important info under data.* — be tolerant
-        const d = data && (data.data || data) || null;
-        if (d) {
-          // assign values if present
-          if (d.otpId) otpData.otpId = d.otpId;
-          if (d.salt) otpData.salt = d.salt;
-          if (d.uuid) otpData.uuid = d.uuid;
-          if (d.user_id) otpData.user_id = d.user_id;
-          otpData.mobile = mobile;
-        }
-      } catch (err) {
-        box.innerText = "Error: " + (err && err.message ? err.message : err);
+      const data = await response.json();
+      if(data.success) {
+        resDiv.textContent = "OTP sent! Please check your mobile.";
+        document.getElementById('otpSection').classList.remove('hidden');
+        window.user_id = data.user_id; // Save user_id globally
+      } else {
+        resDiv.textContent = "Failed to send OTP: " + data.message;
       }
     }
 
-    async function verifyAuth() {
-      const mobile = document.getElementById("mobile").value.trim();
-      const code = document.getElementById("code").value.trim();
-      const box = document.getElementById("responseBox");
-      if (!mobile || !code) { box.innerText = "Please enter mobile and OTP."; return; }
-      box.innerText = "Verifying OTP...";
+    async function verifyOtp() {
+      const mobile = document.getElementById('mobile').value;
+      const otp = document.getElementById('otp').value;
+      const resDiv = document.getElementById('response');
+      resDiv.textContent = "Verifying OTP...";
 
-      // Build payload: include otpData fields if we have them
-      const payload = {
-        mobile: mobile,
-        code: code,
-        // attach otpData fields if present (otpId, salt, uuid, user_id)
-        ...(otpData.otpId ? { otpId: otpData.otpId } : {}),
-        ...(otpData.salt ? { salt: otpData.salt } : {}),
-        ...(otpData.uuid ? { uuid: otpData.uuid } : {}),
-        ...(otpData.user_id ? { user_id: otpData.user_id } : {})
-      };
+      const response = await fetch('/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mobile, otp, user_id: window.user_id })
+      });
 
-      try {
-        const resp = await fetch("/api/authentication-wc", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-        const data = await resp.json();
-        box.innerText = pretty(data);
-
-        // save token + user_id if returned
-        const token = data && (data.token || (data.raw && data.raw.data && data.raw.data.token) || (data.raw && data.raw.token));
-        const user_id = data && (data.user_id || (data.raw && data.raw.data && data.raw.data.user_id) || (data.raw && data.raw.user_id));
-
-        if (token) {
-          bearerToken = token;
-          // store to otpData.user_id in case subscribe needs it
-          if (user_id) otpData.user_id = user_id;
-          box.innerText += "\n\nToken saved (you can now subscribe).";
-        } else {
-          // attempt to extract from nested fields
-          if (data && data.raw && data.raw.data && data.raw.data.token) {
-            bearerToken = data.raw.data.token;
-            otpData.user_id = data.raw.data.user_id;
-            box.innerText += "\n\nToken saved (you can now subscribe).";
-          }
-        }
-      } catch (err) {
-        box.innerText = "Error: " + (err && err.message ? err.message : err);
+      const data = await response.json();
+      if(data.success) {
+        resDiv.textContent = "Signup + OTP verification successful!";
+      } else {
+        resDiv.textContent = "OTP verification failed: " + data.message;
       }
     }
-
-    async function subscribeNow() {
-      // not used by UI directly (verifyAuth also subscribes if you want),
-      // but available for manual calls.
-      const box = document.getElementById("responseBox");
-      const mobile = document.getElementById("mobile").value.trim();
-      if (!bearerToken || !otpData.user_id) {
-        box.innerText = "No token/user_id available. Verify OTP first.";
-        return;
-      }
-      box.innerText = "Subscribing...";
-      try {
-        const resp = await fetch("/api/subscribe-dbss", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            token: bearerToken,
-            user_id: otpData.user_id,
-            mobile: mobile
-          })
-        });
-        const data = await resp.json();
-        box.innerText = pretty(data);
-      } catch (err) {
-        box.innerText = "Error: " + (err && err.message ? err.message : err);
-      }
-    }
-
-    // If you prefer verify step to immediately subscribe, call subscribeNow() after token saved.
-    // The verifyAuth button currently only verifies and saves token; subscription can be executed separately by calling subscribeNow().
   </script>
 </body>
 </html>
