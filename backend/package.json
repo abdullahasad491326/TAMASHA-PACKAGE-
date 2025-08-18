@@ -1,14 +1,14 @@
 {
-  "name": "tamasha-proxy",
+  "name": "jazztv-otp-web",
   "version": "1.0.0",
-  "description": "Proxy to JazzTV signup/auth/subscribe endpoints",
+  "description": "JazzTV OTP Signup + Verification Web App",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "body-parser": "^1.20.2",
     "express": "^4.18.2",
-    "node-fetch": "^2.6.7"
+    "node-fetch": "^2.6.12",
+    "uuid": "^9.0.0"
   }
 }
