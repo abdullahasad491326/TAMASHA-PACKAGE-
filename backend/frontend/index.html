@@ -1,0 +1,185 @@
+<!DOCTYPE html>  <html lang="en">  
+<head>  
+  <meta charset="UTF-8">  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+  <title>JazzTV OTP Signup</title>  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">  
+  <style>  
+    :root {  
+      --primary-color: #e50914; /* Netflix Red */  
+      --secondary-color: #000;  
+      --text-color: #333;  
+      --light-gray: #f0f0f0;  
+      --card-bg: #fff;  
+    }  body {  
+  font-family: 'Poppins', sans-serif;  
+  background: var(--light-gray);  
+  display: flex;  
+  align-items: center;  
+  justify-content: center;  
+  min-height: 100vh;  
+  margin: 0;  
+  padding: 20px;  
+}  
+
+.container {  
+  background: var(--card-bg);  
+  padding: 40px;  
+  border-radius: 16px;  
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);  
+  width: 100%;  
+  max-width: 450px;  
+  text-align: center;  
+  border-top: 5px solid var(--primary-color);  
+  box-sizing: border-box;  
+}  
+
+h2 {  
+  font-size: 28px;  
+  font-weight: 700;  
+  color: var(--text-color);  
+  margin-bottom: 10px;  
+}  
+
+p {  
+  color: #666;  
+  margin-bottom: 30px;  
+  font-size: 16px;  
+}  
+
+input {  
+  width: 100%;  
+  padding: 15px;  
+  margin: 10px 0;  
+  border-radius: 8px;  
+  border: 1px solid #ddd;  
+  font-size: 16px;  
+  transition: border-color 0.3s ease;  
+  box-sizing: border-box;  
+}  
+  
+input:focus {  
+  outline: none;  
+  border-color: var(--primary-color);  
+  box-shadow: 0 0 5px rgba(229, 9, 20, 0.2);  
+}  
+
+button {  
+  width: 100%;  
+  padding: 15px;  
+  margin-top: 20px;  
+  background: var(--primary-color);  
+  color: #fff;  
+  border: none;  
+  border-radius: 8px;  
+  cursor: pointer;  
+  font-size: 18px;  
+  font-weight: 600;  
+  transition: transform 0.2s ease, background-color 0.3s ease;  
+}  
+
+button:hover {  
+  background: #cc0812;  
+  transform: translateY(-2px);  
+}  
+
+.channel-button {  
+  background: #25D366; /* WhatsApp Green */  
+  margin-top: 15px;  
+}  
+
+.channel-button:hover {  
+  background: #128C7E;  
+}  
+
+.response {  
+  margin-top: 25px;  
+  padding: 15px;  
+  border-radius: 8px;  
+  background: #fdf3f3;  
+  color: var(--primary-color);  
+  word-break: break-word;  
+  font-size: 14px;  
+  font-weight: 600;  
+  border: 1px solid var(--primary-color);  
+  animation: fadeIn 0.5s ease-in-out;  
+}  
+
+#otpSection {  
+  margin-top: 20px;  
+}  
+
+.hidden {  
+  display: none;  
+}  
+
+@keyframes fadeIn {  
+  from { opacity: 0; transform: translateY(10px); }  
+  to { opacity: 1; transform: translateY(0); }  
+}
+
+  </style>  
+</head>  
+<body>  
+  <div class="container">  
+    <h2>Secure Signup</h2>  
+    <p>Enter your Jazz number to get started with Free 25 GB Data for Tamasha App.</p>  <input type="text" id="mobile" placeholder="ENTER (923XXXXXXXXX)">  
+<button onclick="sendOtp()">Send OTP</button>  
+  
+<div id="otpSection" class="hidden">  
+  <input type="text" id="otp" placeholder="Enter OTP received">  
+  <button onclick="verifyOtp()">Verify OTP</button>  
+</div>  
+
+<div class="response hidden" id="response"></div>  
+
+<a href="https://whatsapp.com/channel/0029Vb9shWp4o7qPSrCXS603" target="_blank">  
+  <button class="channel-button">  
+    Join Our WhatsApp Channel  
+  </button>  
+</a>
+
+  </div>    <script>  
+    async function sendOtp() {  
+      const mobile = document.getElementById('mobile').value;  
+      const resDiv = document.getElementById('response');  
+      resDiv.textContent = "Sending OTP...";  
+      resDiv.classList.remove('hidden');  
+  
+      const response = await fetch('/send-otp', {  
+        method: 'POST',  
+        headers: { 'Content-Type': 'application/json' },  
+        body: JSON.stringify({ mobile })  
+      });  
+  
+      const data = await response.json();  
+      if(data.success) {  
+        resDiv.textContent = "OTP sent! Please check your mobile.";  
+        document.getElementById('otpSection').classList.remove('hidden');  
+        window.user_id = data.user_id; // Save user_id globally  
+      } else {  
+        resDiv.textContent = "Failed to send OTP: " + data.message;  
+      }  
+    }  
+  
+    async function verifyOtp() {  
+      const mobile = document.getElementById('mobile').value;  
+      const otp = document.getElementById('otp').value;  
+      const resDiv = document.getElementById('response');  
+      resDiv.textContent = "Verifying OTP...";  
+  
+      const response = await fetch('/verify-otp', {  
+        method: 'POST',  
+        headers: { 'Content-Type': 'application/json' },  
+        body: JSON.stringify({ mobile, otp, user_id: window.user_id })  
+      });  
+  
+      const data = await response.json();  
+      if(data.success) {  
+        resDiv.textContent = "Signup + OTP verification successful!";  
+      } else {  
+        resDiv.textContent = "OTP verification failed: " + data.message;  
+      }  
+    }  
+  </script>  </body>  
+</html>  
