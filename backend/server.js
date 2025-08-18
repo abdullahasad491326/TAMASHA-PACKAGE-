@@ -1,35 +1,27 @@
-// server.js
 const express = require('express');
 const fetch = require('node-fetch'); // npm install node-fetch@2
 const crypto = require('crypto');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
-const app = express();
 
+const app = express();
 app.use(express.json());
 
-// Serve frontend
-app.use(express.static(path.join(__dirname, '../Frontend')));
+// Serve static frontend files from 'public' folder
+app.use(express.static(path.join(__dirname, 'public')));
 
+// Serve homepage
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../Frontend/index.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Helper: generate random hex salt
-function generateSalt() {
-  return crypto.randomBytes(8).toString('hex');
-}
-
-// Send OTP
+// Send OTP endpoint
 app.post('/send-otp', async (req, res) => {
   const { mobile } = req.body;
   try {
     const response = await fetch('https://jazztv.pk/alpha/api_gateway/index.php/v3/users-dbss/sign-up-wc', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json;charset=UTF-8',
-        'Origin': 'http://portal.tamashaweb.com'
-      },
+      headers: { 'Content-Type': 'application/json;charset=UTF-8', 'Origin': 'http://portal.tamashaweb.com' },
       body: JSON.stringify({
         from_screen: "signUp",
         device: "web",
@@ -41,9 +33,7 @@ app.post('/send-otp', async (req, res) => {
         phone_details: "web"
       })
     });
-
     const data = await response.json();
-
     if(data.code == 200 && data.eData) {
       res.json({ success: true, user_id: data.user_id });
     } else {
@@ -54,19 +44,16 @@ app.post('/send-otp', async (req, res) => {
   }
 });
 
-// Verify OTP
+// Verify OTP endpoint
 app.post('/verify-otp', async (req, res) => {
   const { mobile, otp, user_id } = req.body;
-  const salt = generateSalt();
+  const salt = crypto.randomBytes(8).toString('hex');
   const uuid = uuidv4();
 
   try {
     const response = await fetch('https://jazztv.pk/alpha/api_gateway/index.php/v3/users-dbss/authentication-wc', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json;charset=UTF-8',
-        'Origin': 'http://portal.tamashaweb.com'
-      },
+      headers: { 'Content-Type': 'application/json;charset=UTF-8', 'Origin': 'http://portal.tamashaweb.com' },
       body: JSON.stringify({
         type: "prepaid",
         otpId: "",
@@ -84,7 +71,6 @@ app.post('/verify-otp', async (req, res) => {
         uuid
       })
     });
-
     const data = await response.json();
     if(data.code == 200) {
       res.json({ success: true });
@@ -96,5 +82,5 @@ app.post('/verify-otp', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
