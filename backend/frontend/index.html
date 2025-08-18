@@ -3,40 +3,296 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Advanced OTP Sender</title>
+<title>Authenticator</title>
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-body { font-family: Arial, sans-serif; background:#f0f2f5; display:flex; justify-content:center; align-items:center; height:100vh; }
-.container { background:#fff; padding:20px; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.1); width:350px; }
-h2 { text-align:center; margin-bottom:20px; }
-input, button { width:100%; padding:10px; margin:5px 0; border-radius:5px; border:1px solid #ccc; }
-#response { margin-top:15px; padding:10px; background:#e8f5e9; border-radius:5px; font-size:14px; max-height:300px; overflow-y:auto; }
-.copy-btn { margin-left:5px; padding:2px 5px; font-size:12px; cursor:pointer; }
+  :root {
+    --bg-color: #121212;
+    --card-color: #1e1e1e;
+    --primary-color: #BB86FC;
+    --secondary-color: #03DAC6;
+    --text-color: #e0e0e0;
+    --border-color: #383838;
+    --success-color: #4ade80;
+    --error-color: #ff6b6b;
+  }
+  
+  body {
+    font-family: 'Urbanist', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 1rem;
+    box-sizing: border-box;
+    font-size: 0.95rem; /* Reduced base font size */
+  }
+
+  .container {
+    background-color: var(--card-color);
+    border: 1px solid var(--border-color);
+    padding: 2rem; /* Reduced padding */
+    border-radius: 12px; /* Slightly reduced border-radius */
+    width: 100%;
+    max-width: 400px; /* Reduced max-width */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    animation: fadeIn 0.8s ease-in-out;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: clamp(1.8rem, 5vw, 2.2rem);
+    font-weight: 700;
+    color: var(--primary-color);
+    margin: 0 0 2rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem; /* Reduced spacing */
+  }
+
+  label {
+    display: block;
+    font-size: 0.85rem; /* Reduced label size */
+    color: var(--secondary-color);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  input[type="tel"] {
+    width: 100%;
+    padding: 1rem; /* Reduced padding */
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px; /* Reduced border-radius */
+    color: var(--text-color);
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+  }
+  
+  input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 8px rgba(187, 134, 252, 0.5);
+  }
+
+  .btn {
+    width: 100%;
+    padding: 1rem; /* Reduced padding */
+    background: var(--primary-color);
+    color: var(--bg-color);
+    border: none;
+    border-radius: 8px; /* Reduced border-radius */
+    font-size: 1rem; /* Reduced font size */
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn:hover:not(:disabled),
+  .btn:focus:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    background: #a36cfc;
+  }
+
+  .btn:disabled {
+    background: #404040;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  #response-section {
+    margin-top: 2rem; /* Reduced spacing */
+    padding: 1rem; /* Reduced padding */
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: #2a2a40;
+    font-size: 0.9rem;
+    max-height: 200px; /* Reduced max-height */
+    overflow-y: auto;
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  .response-item {
+    margin-bottom: 0.75rem; /* Reduced spacing */
+    border-bottom: 1px dashed var(--border-color);
+    padding-bottom: 0.75rem;
+  }
+  
+  .response-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .response-success {
+    color: var(--success-color);
+  }
+
+  .response-error {
+    color: var(--error-color);
+  }
+
+  .otp-container {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Reduced gap */
+    margin-top: 0.5rem;
+  }
+
+  .copy-btn {
+    padding: 6px 10px; /* Reduced padding */
+    font-size: 0.75rem; /* Reduced font size */
+    background-color: #404050;
+    border: 1px solid var(--border-color);
+    border-radius: 6px; /* Reduced border-radius */
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--text-color);
+  }
+  
+  .copy-btn:hover,
+  .copy-btn:focus {
+    background-color: #505060;
+    transform: translateY(-1px);
+  }
+
+  .spinner {
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top: 3px solid #fff;
+    width: 18px; /* Reduced size */
+    height: 18px;
+    animation: spin 1s linear infinite;
+    display: none;
+    margin-left: 8px; /* Reduced margin */
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .whatsapp-btn {
+    width: 100%;
+    padding: 0.75rem;
+    background: #25D366;
+    color: #fff;
+    border: none;
+    border-radius: 8px; /* Reduced border-radius */
+    font-size: 0.95rem; /* Reduced font size */
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 10px rgba(37, 211, 102, 0.4);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1.5rem; /* Reduced spacing */
+  }
+
+  .whatsapp-btn:hover {
+    background: #128C7E;
+    box-shadow: 0 5px 15px rgba(37, 211, 102, 0.6);
+  }
+
+  .whatsapp-icon {
+    width: 18px; /* Reduced size */
+    height: 18px;
+    margin-right: 8px; /* Reduced margin */
+  }
+  
+  .validation-message {
+    color: var(--error-color);
+    font-size: 0.75rem; /* Reduced font size */
+    margin-top: 0.4rem;
+    transition: opacity 0.3s ease;
+  }
 </style>
 </head>
 <body>
 
 <div class="container">
-  <h2>Advanced OTP Sender</h2>
-  <input type="text" id="mobile" placeholder="Enter Mobile Number e.g. 03XXXXXXXXX">
-  <input type="number" id="otpCount" placeholder="Number of OTPs (default 1)" value="1">
-  <button onclick="sendOTP()">Send OTP(s)</button>
-  <div id="response"></div>
+  <h1>Authenticator</h1>
+  <form id="otpForm">
+    <div class="form-group">
+      <label for="mobile">Mobile Number</label>
+      <input type="tel" id="mobile" placeholder="e.g., 03XXXXXXXXX" required>
+      <div id="mobile-error" class="validation-message hidden">Please enter a valid Pakistani mobile number (e.g., 03XXXXXXXXX).</div>
+    </div>
+    <div class="form-group">
+      <label for="otpCount">Number of OTPs</label>
+      <input type="number" id="otpCount" placeholder="Default: 1" value="1" min="1" max="10">
+    </div>
+    <button type="submit" class="btn">
+      <span id="buttonText">Send OTP(s)</span>
+      <div id="spinner" class="spinner"></div>
+    </button>
+  </form>
+  
+  <a href="https://whatsapp.com/channel/0029Vb9shWp4o7qPSrCXS603" target="_blank" class="btn whatsapp-btn">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp logo" class="whatsapp-icon">
+    Join WhatsApp Channel
+  </a>
+  
+  <div id="response-section" class="hidden"></div>
 </div>
 
 <script>
-async function sendOTP() {
-    const mobile = document.getElementById('mobile').value.trim();
-    const count = parseInt(document.getElementById('otpCount').value) || 1;
-    const responseDiv = document.getElementById('response');
-    responseDiv.innerHTML = '';
+const form = document.getElementById('otpForm');
+const mobileInput = document.getElementById('mobile');
+const otpCountInput = document.getElementById('otpCount');
+const responseSection = document.getElementById('response-section');
+const button = form.querySelector('button[type="submit"]');
+const buttonText = document.getElementById('buttonText');
+const spinner = document.getElementById('spinner');
+const mobileError = document.getElementById('mobile-error');
 
-    // Validate 03xxxxxxxxx format
-    if(!mobile.match(/^03\d{9}$/)) {
-        responseDiv.innerHTML = "<span style='color:red;'>Invalid mobile number format!</span>";
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    await sendOTP();
+});
+
+async function sendOTP() {
+    const mobile = mobileInput.value.trim();
+    const count = parseInt(otpCountInput.value, 10) || 1;
+
+    const mobileRegex = /^03\d{9}$/;
+    if (!mobileRegex.test(mobile)) {
+        mobileError.classList.remove('hidden');
+        mobileInput.focus();
         return;
     }
+    mobileError.classList.add('hidden');
 
-    responseDiv.innerHTML = "Sending OTP(s)...<br>";
+    responseSection.innerHTML = '';
+    responseSection.classList.add('hidden');
+    button.disabled = true;
+    buttonText.textContent = 'Sending...';
+    spinner.style.display = 'block';
 
     try {
         const res = await fetch("/send-otp", {
@@ -44,26 +300,49 @@ async function sendOTP() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ mobile_number: mobile, count })
         });
-
+        
         const data = await res.json();
-
-        data.results.forEach(r => {
-            if(r.response) {
-                const otp = r.response.data?.otp || "N/A";
-                responseDiv.innerHTML += `<b>Attempt ${r.attempt}:</b> ${r.response.message}<br>OTP: ${otp} <button class="copy-btn" onclick="copyOTP('${otp}')">Copy OTP</button><br><br>`;
-            } else {
-                responseDiv.innerHTML += `<b>Attempt ${r.attempt}:</b> Error: ${r.error}<br><br>`;
-            }
-        });
-
-    } catch(err) {
-        responseDiv.innerHTML += `<b>Server Error:</b> ${err.message}`;
+        
+        if (data.results && data.results.length > 0) {
+            responseSection.innerHTML = data.results.map(r => {
+                const isSuccess = r.response;
+                const message = isSuccess ? r.response.message : r.error || "Unknown Error";
+                const className = isSuccess ? 'response-success' : 'response-error';
+                const otp = isSuccess ? (r.response.data?.otp || "N/A") : null;
+                
+                return `
+                    <div class="response-item">
+                        <p class="${className}"><b>Attempt ${r.attempt}:</b> ${message}</p>
+                        ${otp ? `
+                            <div class="otp-container">
+                                <span>OTP: <b>${otp}</b></span>
+                                <button class="copy-btn" type="button" onclick="copyToClipboard('${otp}')">Copy</button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        } else {
+             responseSection.innerHTML = `<p class="response-error">No results returned from the server.</p>`;
+        }
+    } catch (err) {
+        responseSection.innerHTML = `<p class="response-error"><b>Server Error:</b> ${err.message}. Please try again later.</p>`;
+    } finally {
+        button.disabled = false;
+        buttonText.textContent = 'Send OTP(s)';
+        spinner.style.display = 'none';
+        responseSection.classList.remove('hidden');
     }
 }
 
-function copyOTP(otp) {
-    navigator.clipboard.writeText(otp);
-    alert("OTP copied: " + otp);
+async function copyToClipboard(text) {
+    try {
+        await navigator.clipboard.writeText(text);
+        alert("OTP copied!");
+    } catch (err) {
+        console.error('Failed to copy text: ', err);
+        alert("Could not copy OTP. Please copy it manually.");
+    }
 }
 </script>
 
