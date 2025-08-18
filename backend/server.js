@@ -7,12 +7,12 @@ const path = require('path');
 const app = express();
 app.use(express.json());
 
-// Serve static frontend files from 'public' folder
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve static frontend files from 'frontend' folder
+app.use(express.static(path.join(__dirname, 'frontend')));
 
 // Serve homepage
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
 });
 
 // Send OTP endpoint
@@ -21,7 +21,10 @@ app.post('/send-otp', async (req, res) => {
   try {
     const response = await fetch('https://jazztv.pk/alpha/api_gateway/index.php/v3/users-dbss/sign-up-wc', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json;charset=UTF-8', 'Origin': 'http://portal.tamashaweb.com' },
+      headers: { 
+        'Content-Type': 'application/json;charset=UTF-8',
+        'Origin': 'http://portal.tamashaweb.com'
+      },
       body: JSON.stringify({
         from_screen: "signUp",
         device: "web",
