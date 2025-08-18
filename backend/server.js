@@ -1,14 +1,17 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const fetch = require("node-fetch");
+const fetch = require("node-fetch"); // make sure version 2.x is installed
 const cors = require("cors");
+const path = require("path");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static("public"));
+
+// Serve frontend from "Frontend" folder
+app.use(express.static(path.join(__dirname, "Frontend")));
 
 // Convert 03XXXXXXXXX to 923XXXXXXXXX
 function formatMobile(number) {
@@ -57,6 +60,11 @@ app.post("/send-otp", async (req, res) => {
   res.json({ status: true, results });
 });
 
+// Root route → serve index.html
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "Frontend", "index.html"));
+});
+
 app.listen(PORT, () => {
-  console.log(`OTP Sender server running at http://localhost:${PORT}`);
+  console.log(`✅ OTP Sender server running at http://localhost:${PORT}`);
 });
