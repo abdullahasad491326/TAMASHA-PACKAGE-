@@ -11,7 +11,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Serve frontend from "Frontend" folder
-app.use(express.static(path.join(__dirname, "Frontend")));
+app.use(express.static(path.join(__dirname, "frontend")));
 
 // Convert 03XXXXXXXXX to 923XXXXXXXXX
 function formatMobile(number) {
