@@ -1,19 +1,16 @@
 {
-  "name": "jazztv-otp-web",
+  "name": "otp-sender-web",
   "version": "1.0.0",
-  "description": "JazzTV OTP Signup + Verification Web App",
+  "description": "Advanced OTP Sender Web App (03xxxx format)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
     "express": "^4.18.2",
-    "node-fetch": "^2.6.12",
-    "uuid": "^9.0.0"
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "node-fetch": "^3.4.1"
   },
-  "engines": {
-    "node": ">=18"
-  },
-  "author": "(@CYBEREXPERTPK)",
-  "license": "MIT"
+  "type": "module"
 }
