@@ -1,18 +1,18 @@
-import express from "express";
-import bodyParser from "body-parser";
-import fetch from "node-fetch";
-import cors from "cors";
+const express = require("express");
+const bodyParser = require("body-parser");
+const fetch = require("node-fetch");
+const cors = require("cors");
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static("public")); // serve index.html from 'public' folder
+app.use(express.static("public"));
 
-// Convert local 03xxxxxxxxx to 923xxxxxxxxx format
+// Convert 03XXXXXXXXX to 923XXXXXXXXX
 function formatMobile(number) {
-  if(number.startsWith("03") && number.length === 11){
+  if (number.startsWith("03") && number.length === 11) {
     return "92" + number.slice(1);
   }
   return number; // assume already in full format
